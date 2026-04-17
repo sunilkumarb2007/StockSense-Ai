@@ -97,6 +97,7 @@ def gemini(prompt: str):
 
         response = requests.post(
             url,
+            headers={"Content-Type": "application/json"},
             json={
                 "contents": [{"parts": [{"text": prompt}]}]
             },
@@ -104,6 +105,7 @@ def gemini(prompt: str):
         )
 
         data = response.json()
+        print("Gemini raw:", data)
 
         # ✅ SAFE PARSING
         if "candidates" in data and len(data["candidates"]) > 0:
@@ -233,5 +235,16 @@ class ChatRequest(BaseModel):
 
 @app.post("/api/chat/")
 async def chat(req: ChatRequest):
-    reply = gemini(f"You are Indian stock AI. Answer in ₹ INR.\nUser: {req.message}")
+    prompt = f"""
+You are a helpful Indian stock market assistant.
+
+Answer clearly with:
+- ₹ INR values
+- Short explanation
+- Suggest BUY / SELL / HOLD
+
+User question: {req.message}
+"""
+
+    reply = gemini(prompt)
     return {"reply": reply}
