@@ -1,7 +1,4 @@
 fastapi
 uvicorn[standard]
 python-dotenv
-pydantic
 requests
-google-genai
-httpx
