@@ -104,7 +104,15 @@ def gemini(prompt: str):
         )
 
         data = response.json()
-        return data["candidates"][0]["content"]["parts"][0]["text"]
+
+        # ✅ SAFE PARSING
+        if "candidates" in data and len(data["candidates"]) > 0:
+            parts = data["candidates"][0].get("content", {}).get("parts", [])
+            if len(parts) > 0:
+                return parts[0].get("text", "No response")
+
+        # fallback
+        return "AI couldn't generate response. Try again."
 
     except Exception as e:
         return f"Error: {str(e)}"
